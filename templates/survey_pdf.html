@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Print - {{ survey.title }}{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        body {
+            background-color: white !important;
+            color: black !important;
+        }
+        .card {
+            border: 1px solid #ddd !important;
+            color: black !important;
+            background-color: white !important;
+            box-shadow: none !important;
+        }
+        .card-header {
+            background-color: #f8f9fa !important;
+            color: black !important;
+        }
+        .container {
+            max-width: 100% !important;
+        }
+    }
+    
+    .print-question {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px dotted #ccc;
+    }
+    
+    .print-options {
+        margin-top: 0.5rem;
+    }
+    
+    .print-option {
+        margin-bottom: 0.5rem;
+    }
+    
+    .checkbox-placeholder {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 1px solid #aaa;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+    
+    .line-placeholder {
+        display: block;
+        height: 1px;
+        border-bottom: 1px solid #aaa;
+        margin: 15px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Print button - won't show in actual printout -->
+    <div class="mb-4 no-print">
+        <button class="btn btn-primary" onclick="window.print()">
+            <i class="fas fa-print me-2"></i> Print Survey
+        </button>
+        <a href="{{ url_for('view_survey', survey_id=survey.id) }}" class="btn btn-outline-secondary ms-2">
+            <i class="fas fa-arrow-left me-1"></i> Back to Survey
+        </a>
+    </div>
+    
+    <!-- Survey header -->
+    <div class="text-center mb-5">
+        {% if survey.logo_image %}
+            <img src="{{ survey.logo_image }}" alt="Survey logo" style="max-height: 80px; margin-bottom: 1rem;">
+        {% endif %}
+        <h1 class="mb-3">{{ survey.title }}</h1>
+        {% if survey.description %}
+            <p class="lead">{{ survey.description }}</p>
+        {% endif %}
+    </div>
+    
+    <!-- Survey questions -->
+    <div class="questions-container">
+        {% for question in questions %}
+            <div class="print-question">
+                <h4>{{ loop.index }}. {{ question.question_text }} {% if question.required %}*{% endif %}</h4>
+                
+                {% if question.question_type == 'multiple-choice' %}
+                    <div class="print-options">
+                        {% for option in question.options %}
+                            <div class="print-option">
+                                <span class="checkbox-placeholder"></span>
+                                {{ option.option_text }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% elif question.question_type == 'text' %}
+                    <div class="print-options">
+                        <div class="line-placeholder"></div>
+                        <div class="line-placeholder"></div>
+                        <div class="line-placeholder"></div>
+                    </div>
+                {% elif question.question_type == 'rating' %}
+                    <div class="print-options">
+                        <div class="d-flex justify-content-between mt-3" style="width: 300px">
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>4</span>
+                            <span>5</span>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1" style="width: 300px">
+                            {% for i in range(5) %}
+                                <span class="checkbox-placeholder"></span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% elif question.question_type == 'slider' %}
+                    <div class="print-options">
+                        <div class="d-flex justify-content-between mt-3" style="width: 500px">
+                            <span>0</span>
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>4</span>
+                            <span>5</span>
+                            <span>6</span>
+                            <span>7</span>
+                            <span>8</span>
+                            <span>9</span>
+                            <span>10</span>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1" style="width: 500px">
+                            {% for i in range(11) %}
+                                <span class="checkbox-placeholder"></span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Footer -->
+    <div class="text-center mt-5">
+        <p class="text-muted">Thank you for completing this survey!</p>
+        <p class="text-muted small">Printed from Survey App on {{ now().strftime('%Y-%m-%d') }}</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-print when the page loads (after a short delay to ensure everything is rendered)
+        setTimeout(function() {
+            window.print();
+        }, 500);
+    });
+</script>
+{% endblock %}

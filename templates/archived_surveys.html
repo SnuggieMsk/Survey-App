@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Archived Surveys{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Archived Surveys</h1>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left"></i> Back to Active Surveys
+    </a>
+</div>
+
+{% if surveys %}
+    <div class="row">
+        {% for survey in surveys %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ survey.title }}</h5>
+                        <span class="badge bg-secondary">Archived</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ survey.description or "No description provided." }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Created: {{ survey.created_at }}</small>
+                            <small class="text-muted">
+                                <i class="fas fa-palette"></i> {{ survey.theme|capitalize }} theme
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100">
+                            <a href="{{ url_for('view_survey', survey_id=survey.id) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <form action="{{ url_for('toggle_archive_survey', survey_id=survey.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-outline-success">
+                                    <i class="fas fa-undo"></i> Restore
+                                </button>
+                            </form>
+                            <form action="{{ url_for('delete_survey', survey_id=survey.id) }}" method="POST" class="d-inline" 
+                                  onsubmit="return confirm('Are you sure you want to permanently delete this survey? This action cannot be undone.')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i> You don't have any archived surveys.
+    </div>
+{% endif %}
+{% endblock %}

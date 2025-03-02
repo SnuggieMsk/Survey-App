@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}{{ survey.title }} - Responses{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>{{ survey.title }} - Responses</h1>
+        <p class="lead">{{ survey.description }}</p>
+        <p class="text-muted">Total responses: {{ response_count }}</p>
+    </div>
+    <div class="btn-group">
+        <a href="{{ url_for('edit_survey', survey_id=survey.id) }}" class="btn btn-outline-primary">
+            <i class="fas fa-edit"></i> Edit Survey
+        </a>
+        <a href="{{ url_for('export_responses', survey_id=survey.id) }}" class="btn btn-success">
+            <i class="fas fa-download"></i> Export CSV
+        </a>
+        <a href="{{ url_for('view_survey', survey_id=survey.id) }}" class="btn btn-outline-secondary">
+            <i class="fas fa-eye"></i> View Survey
+        </a>
+    </div>
+</div>
+
+<hr class="my-4" style="border-color: rgba(255, 255, 255, 0.1);">
+
+{% if responses %}
+    <!-- Charts for each question -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Response Visualizations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for question in questions %}
+                            {% if charts and question.id in charts %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="chart-container">
+                                        <h5>{{ question.question_text }}</h5>
+                                        <img src="{{ charts[question.id] }}" class="chart-image" alt="Chart for {{ question.question_text }}">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Response data table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Response Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Submission Time</th>
+                            {% for question in questions %}
+                                <th>{{ question.question_text }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for response in responses %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ response.created_at }}</td>
+                                {% for question in questions %}
+                                    <td>
+                                        {% set found = false %}
+                                        {% for answer in response.answers %}
+                                            {% if answer.question_id == question.id %}
+                                                {% if answer.option_text %}
+                                                    {{ answer.option_text }}
+                                                {% elif answer.text_answer %}
+                                                    {{ answer.text_answer }}
+                                                {% elif answer.number_answer is not none %}
+                                                    {% if question.question_type == 'rating' %}
+                                                        <div class="d-inline-flex">
+                                                            {% for i in range(5) %}
+                                                                <i class="fas fa-star {% if i < answer.number_answer %}text-warning{% else %}text-muted{% endif %}"></i>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        {{ answer.number_answer }}
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% set found = true %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if not found %}
+                                            <span class="text-muted">No answer</span>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4>No responses yet</h4>
+        <p>Share the survey link with participants to collect responses.</p>
+        <div class="input-group mt-3">
+            <input type="text" class="form-control" id="survey-link" value="{{ request.host_url }}survey/{{ survey.id }}/view" readonly>
+            <button class="btn btn-outline-primary" id="copy-link" onclick="copyLink()">
+                <i class="fas fa-copy"></i> Copy Link
+            </button>
+        </div>
+    </div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Share Survey</h5>
+    </div>
+    <div class="card-body">
+        <p>Share this link with participants to collect responses:</p>
+        <div class="input-group">
+            <input type="text" class="form-control" id="share-link" value="{{ request.host_url }}survey/{{ survey.id }}/view" readonly>
+            <button class="btn btn-outline-primary" id="copy-share-link" onclick="copyShareLink()">
+                <i class="fas fa-copy"></i> Copy Link
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function copyLink() {
+        const linkInput = document.getElementById('survey-link');
+        linkInput.select();
+        document.execCommand('copy');
+        
+        // Show toast notification
+        showToast('Survey link copied to clipboard!', 'success');
+    }
+    
+    function copyShareLink() {
+        const linkInput = document.getElementById('share-link');
+        linkInput.select();
+        document.execCommand('copy');
+        
+        // Show toast notification
+        showToast('Survey link copied to clipboard!', 'success');
+    }
+</script>
+{% endblock %}

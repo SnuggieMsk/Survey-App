@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Survey Not Published - {{ survey.title }}{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <div class="mb-4">
+        <i class="fas fa-eye-slash fa-5x text-warning"></i>
+    </div>
+    <h1>Survey Not Published</h1>
+    <p class="lead">This survey is not yet available to the public.</p>
+    
+    <div class="card mt-4 mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <h5>{{ survey.title }}</h5>
+            <p>{{ survey.description }}</p>
+            <p class="text-warning">
+                <i class="fas fa-exclamation-circle"></i> 
+                This survey has not been published by the creator yet.
+            </p>
+        </div>
+    </div>
+    
+    <a href="{{ url_for('index') }}" class="btn btn-primary mt-4">
+        <i class="fas fa-home mr-2"></i> Return to Home
+    </a>
+</div>
+{% endblock %}
