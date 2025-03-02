@@ -1,0 +1,159 @@
+# Enhanced Survey Application - Installation Guide
+
+This document provides step-by-step instructions for installing and running the enhanced survey application.
+
+## Prerequisites
+
+Before you begin, ensure that you have the following installed:
+- Python 3.7 or higher
+- pip (Python package installer)
+- Git (optional, for cloning the repository)
+
+## File Structure
+
+The application should have the following directory structure:
+
+```
+survey-app/
+│
+├── app.py                  # Main application file
+├── .env                    # Environment variables (create from .env.example)
+├── requirements.txt        # Python dependencies
+├── Procfile                # For deployment to platforms like Heroku
+├── test_app.py             # Basic tests
+│
+├── static/                 # Static files
+│   ├── css/
+│   │   └── style.css       # Main stylesheet
+│   ├── js/
+│   │   └── app.js          # JavaScript for the application
+│   ├── img/                # Images
+│   └── uploads/            # Directory for uploaded files
+│
+├── templates/              # HTML templates
+│   ├── base.html           # Base template with layout
+│   ├── index.html          # Homepage
+│   ├── survey_editor.html  # Survey editor page
+│   ├── survey_view.html    # Survey view page
+│   ├── survey_responses.html # Survey responses page
+│   ├── survey_settings.html # Survey settings page
+│   ├── survey_pdf.html     # Printable survey view
+│   ├── survey_expired.html # Expired survey page
+│   ├── survey_not_published.html # Unpublished survey page
+│   ├── archived_surveys.html # Archived surveys page
+│   ├── 400.html            # 400 error page
+│   ├── 403.html            # 403 error page
+│   ├── 404.html            # 404 error page
+│   ├── 429.html            # 429 error page
+│   └── 500.html            # 500 error page
+│
+└── logs/                   # Application logs directory
+```
+
+## Installation Steps
+
+1. **Clone or download the code**:
+   Download all provided files and place them in the appropriate directory structure as shown above.
+
+2. **Create a virtual environment**:
+   ```bash
+   python -m venv venv
+   ```
+
+3. **Activate the virtual environment**:
+   - On Windows:
+     ```bash
+     venv\Scripts\activate
+     ```
+   - On macOS/Linux:
+     ```bash
+     source venv/bin/activate
+     ```
+
+4. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. **Create environment file**:
+   Copy `.env.example` to `.env` and update the settings:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit the `.env` file to set your own secret key and other configuration options:
+   ```
+   SECRET_KEY=your_generated_secret_key_here
+   ```
+   
+   You can generate a secret key with Python:
+   ```python
+   import os
+   os.urandom(24).hex()
+   ```
+
+6. **Create directories**:
+   Make sure the following directories exist:
+   ```bash
+   mkdir -p static/uploads logs
+   ```
+
+7. **Initialize the database**:
+   The database will be created automatically when you run the application for the first time.
+
+## Running the Application
+
+1. **Start the development server**:
+   ```bash
+   python app.py
+   ```
+
+2. **Access the application**:
+   Open your web browser and navigate to:
+   ```
+   http://localhost:5000
+   ```
+
+## Running Tests
+
+To run the basic tests:
+
+```bash
+pytest test_app.py
+```
+
+## Deployment to Production
+
+For production deployment:
+
+1. **Set environment variables**:
+   Update your `.env` file:
+   ```
+   FLASK_ENV=production
+   SESSION_COOKIE_SECURE=True
+   ```
+
+2. **Use a production WSGI server**:
+   ```bash
+   gunicorn app:app
+   ```
+
+## Troubleshooting
+
+Common issues and their solutions:
+
+1. **Database errors**:
+   - Delete the `survey.db` file and restart the application to recreate the database.
+
+2. **Missing dependencies**:
+   - Run `pip install -r requirements.txt` to ensure all dependencies are installed.
+
+3. **File upload issues**:
+   - Ensure the `static/uploads` directory exists and has write permissions.
+
+4. **Log access**:
+   - Check the `logs/survey_app.log` file for error messages and debugging information.
+
+## License
+
+This application is provided for educational purposes. Use at your own discretion.
