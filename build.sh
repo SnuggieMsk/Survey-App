@@ -2,8 +2,9 @@
 # exit on error
 set -o errexit
 
+# Install dependencies
 pip install -r requirements.txt
 
-# Create uploads and logs directories
-mkdir -p static/uploads logs
-chmod -R 777 static/uploads logs
+# Create necessary directories
+mkdir -p static/uploads
+chmod -R 777 static/uploads
