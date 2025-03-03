@@ -4,6 +4,6 @@ set -o errexit
 
 pip install -r requirements.txt
 
-# Create uploads directory
-mkdir -p static/uploads
-chmod -R 777 static/uploads
+# Create uploads and logs directories
+mkdir -p static/uploads logs
+chmod -R 777 static/uploads logs
