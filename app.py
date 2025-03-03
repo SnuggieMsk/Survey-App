@@ -74,12 +74,15 @@ csrf = CSRFProtect(app)
 
 # Configure logging
 if not app.debug:
-    file_handler = RotatingFileHandler('logs/survey_app.log', maxBytes=10240, backupCount=10)
-    file_handler.setFormatter(logging.Formatter(
+    import sys
+    
+    # Log to stdout instead of a file
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     ))
-    file_handler.setLevel(logging.INFO)
-    app.logger.addHandler(file_handler)
+    stream_handler.setLevel(logging.INFO)
+    app.logger.addHandler(stream_handler)
     app.logger.setLevel(logging.INFO)
     app.logger.info('Survey app startup')
 
