@@ -33,7 +33,7 @@ class Config:
     UPLOAD_FOLDER = 'static/uploads'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg'}
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max upload
-    DATABASE = os.environ.get('DATABASE') or 'survey.db'
+    DATABASE = os.environ.get('DATABASE', 'survey.db')
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'AIzaSyA8R_U1pHmh78Qs3q1PWbAJF_qTgsDFGBc')
     GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent"
     SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
